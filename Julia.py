@@ -1,99 +1,112 @@
 from tkinter import Tk, Canvas, PhotoImage, mainloop
 import math
 
-# zoom in on the location indicated by the event
-# modify the maxModules and maxIterations accordingly
-def click(event) :
-	global maxModules, maxIterations
-	
-	# (event.x, event.y) becomes the middle of the screen
-	
-	print("x = " + str(event.x) + ", y = " + str(event.y))
+class Julia_Set:
+	# construct the object
+	def __init__(self, set):
+		self.tk = Tk()
+		self.canvas = Canvas(self.tk, bg="white", height=self.size, width=self.size)
+		self.canvas.pack()
+		self.canvas.bind("<Button-1>", self.click)
 
-def draw_set(julia_set):
-	top = Tk()
-	value = 300
-	canvas = Canvas(top, bg="white", height=value, width=value)
-	canvas.bind("<Button-1>", click)
-	img = PhotoImage(width=value, height=value)
-	canvas.create_image((0, 0), image=img, state="normal")
-	canvas.pack()
-	
-	deltax = 4 / value
-	deltay = 4j / value
-	pixelx = 0
-	complexx = -2
-	while pixelx < value:
-		pixely = 0
-		complexy = 2j
+		self.set = set
+		self.size = 300
+		self.maxModules = 2.0
+		self.maxIterations = 50
+		
+		self.top = 2j
+		self.left = -2
+		self.scale = 4
 
-		while pixely < value: 
-			complex = complexx + complexy
+		self.draw_set()
+		self.tk.mainloop()
 
-			# for each x and y value caluculate z 
-			iterations = iterate(complex, julia_set)
-			# print("iterations = " + str(iterations))
+	def click(self, event):
+		self.center = (event.x, event.y)
+		self.scale = self.scale / 1.5
+		# self.left = self.center[0] - (self.scale / 2)
+		# self.top = self.center[1] + (self.scale / 2)
+		self.draw_set()
 
-			col = colorZ(iterations)
-			# print("col = " + str(col))
+	def draw_set(self):
+		self.canvas.delete("ALL")
+		img = PhotoImage(width=self.size, height=self.size)
+
+		deltax = self.scale / self.size
+		init_complex = 1j
+		init_complex = self.scale * init_complex
+		deltay = init_complex / self.size
+		pixelx = 0
+		complexx = self.left
+		
+		while pixelx < self.size:
+			pixely = 0
+			complexy = self.top
+
+			while pixely < self.size: 
+				complex = complexx + complexy
+				# print(complex)
+
+				# for each x and y value caluculate z 
+				iterations = self.iterate(complex)
+				# print("iterations = " + str(iterations))
+
+				col = self.colorZ(iterations)
+				# print("col = " + str(col))
+				
+				# create a pixel at color: col at (pixelx, pixely)
+				img.put(col, (pixelx, pixely))
 			
-			# create a pixel at color: col at (pixelx, pixely)
-			img.put(col, (pixelx, pixely))
-		
-			pixely = pixely + 1
-			complexy = complexy - deltay
+				pixely = pixely + 1
+				complexy = complexy - deltay
 
-		pixelx = pixelx + 1
-		complexx = complexx + deltax
-		# print("complexx = " + str(complexx) + ", complexy = " + str(complexy))
-	
-	top.mainloop()
+			pixelx = pixelx + 1
+			complexx = complexx + deltax
+			# print("complexx = " + str(complexx) + ", complexy = " + str(complexy))
+		self.canvas.create_image((0, 0), image=img)
 
-def iterate(complex, julia_set):
-	count = 0
-	# print("maxModules = " + str(maxModules))
-	# print("maxIterations = " + str(maxIterations))
+	def iterate(self, complex):
+		count = 0
 
-	while (count < maxIterations) and (math.fabs(complex.real) < maxModules):
-		complex = julia_set(complex)
+		while (count < self.maxIterations) and (math.fabs(complex.real) < self.maxModules):
+			complex = self.set(complex)
+			# print("complex = " + str(complex))
+			count = count + 1
+
+		# print("count = " + str(count))
 		# print("complex = " + str(complex))
-		count = count + 1
 
-	# print("count = " + str(count))
-	# print("complex = " + str(complex))
+		return count
 
-	return count
+	def colorZ(self, z):
+		col = ""
 	
-# return a color corresponding to the value of the tuple z
-def colorZ(z):
-	col = ""
-	
-	if z == maxIterations:
-		col = "black"
-	elif z == 0:
-		col = "white"
-	else:
-		# start with white, increment according to z
-		icol = [0xff, 0xff, 0xff]
-		col = "#"
-		
-		delta = int(icol[0] / maxIterations)
-		for i in range(3):
-			j = 0
-			while j < z:
-				icol[i] = icol[i] - delta
-				j = j + 1
-			# append icol[i] to col
-			out = hex(icol[i]).upper()
-			out = "{0:02X}".format(icol[i])
-			col = col + out
+		if z == self.maxIterations:
+			col = "black"
+		elif z == 0:
+			col = "white"
+		else:
+			# start with white, increment according to z
+			icol = [0xff, 0xff, 0xff]
+			col = "#"
+			
+			delta = int(icol[0] / self.maxIterations)
+			for i in range(3):
+				j = 0
+				while j < z:
+					icol[i] = icol[i] - delta
+					j = j + 1
+				# append icol[i] to col
+				out = hex(icol[i]).upper()
+				out = "{0:02X}".format(icol[i])
+				col = col + out
 
-		# col = hex(icol).upper()
-		# col = format(col, 'x')
-	# print("col = " + str(col))
+			# col = hex(icol).upper()
+			# col = format(col, 'x')
+		# print("col = " + str(col))
 
-	return col
-	
+		return col
+
 def mandelbrot(complex) :
 	return complex * complex + complex
 
@@ -119,15 +132,11 @@ def fifth(complex) :
 	
 # need to map to plane
 def main():
-	global maxModules, maxIterations
-	maxModules = 2.0
-	maxIterations = 50
-
-	draw_set(mandelbrot)
-	# draw_set(first)
-	# draw_set(second)
-	# draw_set(third)
-	# draw_set(fourth)
-	# draw_set(fifth)
-
+	# mandelbrot_set = Julia_Set(mandelbrot)
+	first_set = Julia_Set(first)
+	# second_set = Julia_Set(second)
+	# third_set = Julia_Set(third)
+	# fourth_set = Julia_Set(fourth)
+	# fifth_set = Julia_Set(fifth)
+		
 main()
