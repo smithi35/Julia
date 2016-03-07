@@ -5,12 +5,15 @@ import math
 # modify the maxModules and maxIterations accordingly
 def click(event) :
 	global maxModules, maxIterations
+	
+	# (event.x, event.y) becomes the middle of the screen
+	
 	print("x = " + str(event.x) + ", y = " + str(event.y))
 
 def draw_set(julia_set):
 	top = Tk()
 	value = 300
-	canvas = Canvas(top, height=value, width=value)
+	canvas = Canvas(top, bg="white", height=value, width=value)
 	canvas.bind("<Button-1>", click)
 	img = PhotoImage(width=value, height=value)
 	canvas.create_image((0, 0), image=img, state="normal")
@@ -19,16 +22,18 @@ def draw_set(julia_set):
 	deltax = 4 / value
 	deltay = 4j / value
 	pixelx = 0
-	complexx = -4
-	while pixelx <= value:
+	complexx = -2
+	while pixelx < value:
 		pixely = 0
-		complexy = 4j
-		while pixely <= value: 
+		complexy = 2j
+
+		while pixely < value: 
 			complex = complexx + complexy
-			# print("x = " + str(pixelx) + "\ny = " + str(pixely))
+
 			# for each x and y value caluculate z 
 			iterations = iterate(complex, julia_set)
-			# print("Iterations = " + str(iterations))
+			# print("iterations = " + str(iterations))
+
 			col = colorZ(iterations)
 			# print("col = " + str(col))
 			
@@ -46,8 +51,8 @@ def draw_set(julia_set):
 
 def iterate(complex, julia_set):
 	count = 0
-	# print("c = " + str(c))
 	# print("maxModules = " + str(maxModules))
+	# print("maxIterations = " + str(maxIterations))
 
 	while (count < maxIterations) and (math.fabs(complex.real) < maxModules):
 		complex = julia_set(complex)
@@ -94,27 +99,22 @@ def mandelbrot(complex) :
 
 def first(complex) :
 	c = -0.996 + 0.252j
-	
 	return (complex * complex) + c
 	
 def second(complex) :
 	c = -0.274 - 0.702j
-	
 	return (complex * complex * complex) + c
 	
 def third(complex) :
 	c = 0.522 - 0.53j
-	
 	return (c * complex) + ((1-c) * complex)
 	
 def fourth(complex) :
 	c = 0.05 - 0.139j
-	
 	return (complex * complex) + (c / complex)
 	
 def fifth(complex) :
 	c = 0.19 + 0.98j
-	
 	return (complex * c) + ((1 - c) / (complex * complex))
 	
 # need to map to plane
@@ -122,8 +122,6 @@ def main():
 	global maxModules, maxIterations
 	maxModules = 2.0
 	maxIterations = 50
-
-	# pass a function pointer instead of constant
 
 	draw_set(mandelbrot)
 	# draw_set(first)
