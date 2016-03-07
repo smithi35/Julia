@@ -7,7 +7,7 @@ def click(event) :
 	global maxModules, maxIterations
 	print("x = " + str(event.x) + ", y = " + str(event.y))
 
-def draw_set(top, maxModules, maxIterations, c):
+def draw_set(julia_set):
 	top = Tk()
 	value = 300
 	canvas = Canvas(top, height=value, width=value)
@@ -27,9 +27,9 @@ def draw_set(top, maxModules, maxIterations, c):
 			complex = complexx + complexy
 			# print("x = " + str(pixelx) + "\ny = " + str(pixely))
 			# for each x and y value caluculate z 
-			iterations = iterate(complex, maxModules, maxIterations, c)
+			iterations = iterate(complex, julia_set)
 			# print("Iterations = " + str(iterations))
-			col = colorZ(iterations,maxIterations)
+			col = colorZ(iterations)
 			# print("col = " + str(col))
 			
 			# create a pixel at color: col at (pixelx, pixely)
@@ -44,26 +44,23 @@ def draw_set(top, maxModules, maxIterations, c):
 	
 	top.mainloop()
 
-def iterate(complex, maxModules, maxIterations, c):
+def iterate(complex, julia_set):
 	count = 0
-	do_continue = 1
 	# print("c = " + str(c))
 	# print("maxModules = " + str(maxModules))
 
 	while (count < maxIterations) and (math.fabs(complex.real) < maxModules):
-		complex = (complex * complex) + c
-		# print("x = " + str(x))
-		
+		complex = julia_set(complex)
+		# print("complex = " + str(complex))
 		count = count + 1
 
 	# print("count = " + str(count))
-	# print("x = " + str(x))
-	# print("y = " + str(y))
+	# print("complex = " + str(complex))
 
 	return count
 	
 # return a color corresponding to the value of the tuple z
-def colorZ(z, maxIterations):
+def colorZ(z):
 	col = ""
 	
 	if z == maxIterations:
@@ -92,26 +89,47 @@ def colorZ(z, maxIterations):
 
 	return col
 	
+def mandelbrot(complex) :
+	return complex * complex + complex
+
+def first(complex) :
+	c = -0.996 + 0.252j
+	
+	return (complex * complex) + c
+	
+def second(complex) :
+	c = -0.274 - 0.702j
+	
+	return (complex * complex * complex) + c
+	
+def third(complex) :
+	c = 0.522 - 0.53j
+	
+	return (c * complex) + ((1-c) * complex)
+	
+def fourth(complex) :
+	c = 0.05 - 0.139j
+	
+	return (complex * complex) + (c / complex)
+	
+def fifth(complex) :
+	c = 0.19 + 0.98j
+	
+	return (complex * c) + ((1 - c) / (complex * complex))
+	
 # need to map to plane
 def main():
-	# top = Tk()
-
+	global maxModules, maxIterations
 	maxModules = 2.0
 	maxIterations = 50
 
 	# pass a function pointer instead of constant
-	c = -0.996 + 0.252j
-	# c = 1
-	draw_set(None, maxModules, maxIterations, c)
-	c = -0.271 - 0.702j
-	draw_set(None, maxModules, maxIterations, c)
-	# c = 0.522 - 0.53j
-	# draw_set(top, maxModules, maxIterations, c)
-	# c = 0.05 - 0.139j
-	# draw_set(top, maxModules, maxIterations, c)
-	# c = 0.19 + 0.98j
-	# draw_set(top, maxModules, maxIterations, c)
-	
-	# top.mainloop()
+
+	draw_set(mandelbrot)
+	# draw_set(first)
+	# draw_set(second)
+	# draw_set(third)
+	# draw_set(fourth)
+	# draw_set(fifth)
 
 main()
