@@ -2,9 +2,10 @@ from tkinter import *
 import math
 
 class Julia_Set:
+
 	def __init__(self, set):
 		self.set = set
-		self.size = 100
+		self.size = 200
 		self.maxModules = 2.0
 		self.maxIterations = 50
 
@@ -12,8 +13,9 @@ class Julia_Set:
 		self.canvas = Canvas(self.tk, bg="white", height=self.size, width=self.size)
 		self.canvas.pack()
 		self.canvas.bind("<Button-1>", self.click)
-		self.img = PhotoImage(width=self.size, height=self.size)
-		self.canvas.create_image((0, 0), image=self.img, state="normal")
+
+		img = PhotoImage(width=self.size, height=self.size)
+		self.drawnimage = self.canvas.create_image((0, 0), image=img, state="normal")
 
 		self.top = 2j
 		self.left = -2
@@ -23,22 +25,22 @@ class Julia_Set:
 		self.tk.mainloop()
 
 	def click(self, event):
-		self.canvas.delete(ALL)
-		self.img.blank()
-		self.img = PhotoImage(width=self.size, height=self.size)
-		print("click")
+		# self.canvas.delete(ALL)
+		# print("click")
 		self.center = (event.x, event.y)
-		print(self.center)
+		# print(self.center)
+
 		# convert to complex coordinates
 		self.set_plane()
-		print(self.center)
+		# print(self.center)
 		self.scale = self.scale / 1.5
-		print(self.scale)
+		# print(self.scale)
 		self.left = self.center.real - (self.scale / 2)
-		print(self.left)
+		# print(self.left)
 		self.top = self.center.imag + (self.scale / 2)
-		print(self.top)
+		# print(self.top)
 
+		# redraw
 		self.draw_set()
 
 	# convert self.center to the complex plane
@@ -62,10 +64,15 @@ class Julia_Set:
 		self.center = complexx + complexy
 
 	def draw_set(self):
+		out = PhotoImage(width=self.size, height=self.size)
+		self.canvas.itemconfig(self.drawnimage, image=out)
+
 		self.deltax = self.scale / self.size
+
 		init_complex = 1j
 		init_complex = self.scale * init_complex
 		self.deltay = init_complex / self.size
+
 		pixelx = 0
 		complexx = self.left
 
@@ -85,7 +92,7 @@ class Julia_Set:
 				# print("col = " + str(col))
 
 				# create a pixel at color: col at (pixelx, pixely)
-				self.img.put(col, (pixelx, pixely))
+				out.put(col, (pixelx, pixely))
 
 				pixely = pixely + 1
 				complexy = complexy - self.deltay
@@ -93,6 +100,7 @@ class Julia_Set:
 			pixelx = pixelx + 1
 			complexx = complexx + self.deltax
 			# print("complexx = " + str(complexx) + ", complexy = " + str(complexy))
+		print("Drawn")
 
 	def iterate(self, complex):
 		count = 0
@@ -126,6 +134,7 @@ class Julia_Set:
 					icol[i] = icol[i] - delta
 					j = j + 1
 				# append icol[i] to col
+
 				out = hex(icol[i]).upper()
 				out = "{0:02X}".format(icol[i])
 				col = col + out
@@ -142,23 +151,23 @@ def mandelbrot(complex) :
 def first(complex) :
 	c = -0.996 + 0.252j
 	return (complex * complex) + c
-	
+
 def second(complex) :
 	c = -0.274 - 0.702j
 	return (complex * complex * complex) + c
-	
+
 def third(complex) :
 	c = 0.522 - 0.53j
 	return (c * complex) + ((1-c) * complex)
-	
+
 def fourth(complex) :
 	c = 0.05 - 0.139j
 	return (complex * complex) + (c / complex)
-	
+
 def fifth(complex) :
 	c = 0.19 + 0.98j
 	return (complex * c) + ((1 - c) / (complex * complex))
-	
+
 # need to map to plane
 def main():
 	mandelbrot_set = Julia_Set(mandelbrot)
@@ -167,5 +176,5 @@ def main():
 	# third_set = Julia_Set(third)
 	# fourth_set = Julia_Set(fourth)
 	# fifth_set = Julia_Set(fifth)
-		
+
 main()
