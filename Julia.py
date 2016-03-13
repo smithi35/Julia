@@ -14,8 +14,8 @@ class Julia_Set:
 		self.canvas.pack()
 		self.canvas.bind("<Button-1>", self.click)
 
-		img = PhotoImage(width=self.size, height=self.size)
-		self.drawnimage = self.canvas.create_image((0, 0), image=img, state="normal")
+		self.img = PhotoImage(width=self.size, height=self.size)
+		self.drawnimage = self.canvas.create_image((0, 0), image=self.img, state="normal")
 
 		self.top = 2j
 		self.left = -2
@@ -25,7 +25,7 @@ class Julia_Set:
 		self.tk.mainloop()
 
 	def click(self, event):
-		# self.canvas.delete(ALL)
+		self.canvas.delete(ALL)
 		# print("click")
 		self.center = (event.x, event.y)
 		# print(self.center)
@@ -64,8 +64,8 @@ class Julia_Set:
 		self.center = complexx + complexy
 
 	def draw_set(self):
-		out = PhotoImage(width=self.size, height=self.size)
-		self.canvas.itemconfig(self.drawnimage, image=out)
+		# out = PhotoImage(width=self.size, height=self.size)
+		# self.canvas.itemconfig(self.drawnimage, image=out)
 
 		self.deltax = self.scale / self.size
 
@@ -92,7 +92,7 @@ class Julia_Set:
 				# print("col = " + str(col))
 
 				# create a pixel at color: col at (pixelx, pixely)
-				out.put(col, (pixelx, pixely))
+				self.img.put(col, (pixelx, pixely))
 
 				pixely = pixely + 1
 				complexy = complexy - self.deltay
