@@ -2,31 +2,41 @@ from tkinter import *
 import math
 
 class Julia_Set:
-
+	# constructor sets instance variables
 	def __init__(self, set):
 		self.set = set
-		self.size = 200
+		self.size = 400
 		self.maxModules = 2.0
 		self.maxIterations = 50
 
+		# start tkinter graphics module
 		self.tk = Tk()
-		self.canvas = Canvas(self.tk, bg="white", height=self.size, width=self.size)
+		self.canvas = Canvas(self.tk, bg="white", height=720, width=1280)
 		self.canvas.pack()
 		self.canvas.bind("<Button-1>", self.click)
+		self.canvas.bind(62, self.shift)
 
-		self.img = PhotoImage(width=self.size, height=self.size)
-		self.drawnimage = self.canvas.create_image((0, 0), image=self.img, state="normal")
+		# initialize photoimage object
+		img = PhotoImage(width=self.size, height=self.size)
+		self.canvas.create_image((0, 0), image=img)
 
+		# set variables for complex plane
 		self.top = 2j
 		self.left = -2
 		self.scale = 4
 
-		self.draw_set()
+		self.draw_set(img)
 		self.tk.mainloop()
 
 	def click(self, event):
-		self.canvas.delete(ALL)
+		# delete and reinitialize the image
+		self.canvas.delete("all")
+		img = PhotoImage(width=self.size, height=self.size)
+		self.canvas.create_image((0, 0), image=img)
+		# print(self.img.get(10, 10))
+		
 		# print("click")
+		# get where the screen was clicked
 		self.center = (event.x, event.y)
 		# print(self.center)
 
@@ -39,12 +49,38 @@ class Julia_Set:
 		# print(self.left)
 		self.top = self.center.imag + (self.scale / 2)
 		# print(self.top)
+		
+		self.maxModules = self.maxModules * 2
+		self.maxIterations = self.maxIterations * 2
 
 		# redraw
-		self.draw_set()
+		self.draw_set(img)
+	
+	def shift(self, event):
+		self.canvas.delete("all")
+		img = PhotoImage(width=self.size, height=self.size)
+		self.canvas.create_image((0, 0), image=img)
+		# print(self.img.get(10, 10))
+		
+		# convert to complex coordinates
+		self.set_plane()
+		# print(self.center)
+		self.scale = self.scale * 1.5
+		# print(self.scale)
+		self.left = self.center.real - (self.scale / 2)
+		# print(self.left)
+		self.top = self.center.imag + (self.scale / 2)
+		# print(self.top)
+		
+		self.maxModules = self.maxModules * 2
+		self.maxIterations = self.maxIterations * 2
+
+		# redraw
+		self.draw_set(img)
 
 	# convert self.center to the complex plane
 	def set_plane(self):
+		# set y plane
 		pixely = 0
 		complexy = self.top
 		stopper = self.center[1]
@@ -53,6 +89,7 @@ class Julia_Set:
 			pixely = pixely + 1
 			complexy = complexy - self.deltay
 
+		# set x plane
 		pixelx = 0
 		complexx = self.left
 		stopper = self.center[0]
@@ -63,7 +100,7 @@ class Julia_Set:
 
 		self.center = complexx + complexy
 
-	def draw_set(self):
+	def draw_set(self, img):
 		# out = PhotoImage(width=self.size, height=self.size)
 		# self.canvas.itemconfig(self.drawnimage, image=out)
 
@@ -92,7 +129,12 @@ class Julia_Set:
 				# print("col = " + str(col))
 
 				# create a pixel at color: col at (pixelx, pixely)
-				self.img.put(col, (pixelx, pixely))
+				# print("complex = " + str(complex))
+				# print("pixel = " + str(pixelx) + "," + str(pixely))
+				img.put(col, (pixelx, pixely))
+				
+				if (pixelx == 10) and (pixely == 10):
+					print("At 10^2" + str(col))
 
 				pixely = pixely + 1
 				complexy = complexy - self.deltay
@@ -101,6 +143,7 @@ class Julia_Set:
 			complexx = complexx + self.deltax
 			# print("complexx = " + str(complexx) + ", complexy = " + str(complexy))
 		print("Drawn")
+		print(img.get(10,10))
 
 	def iterate(self, complex):
 		count = 0
@@ -141,7 +184,7 @@ class Julia_Set:
 
 			# col = hex(icol).upper()
 			# col = format(col, 'x')
-		# print("col = " + str(col))
+			# print("col = " + str(col))
 
 		return col
 
