@@ -5,16 +5,16 @@ class Julia_Set:
 	# constructor sets instance variables
 	def __init__(self, set):
 		self.set = set
-		self.size = 400
+		self.size = 50
 		self.maxModules = 2.0
 		self.maxIterations = 50
 
 		# start tkinter graphics module
 		self.tk = Tk()
-		self.canvas = Canvas(self.tk, bg="white", height=720, width=1280)
+		self.canvas = Canvas(self.tk, bg="white", height=self.size, width=self.size)
 		self.canvas.pack()
 		self.canvas.bind("<Button-1>", self.click)
-		self.canvas.bind(62, self.shift)
+		self.canvas.bind("<Shift_L>", self.shift)
 
 		# initialize photoimage object
 		img = PhotoImage(width=self.size, height=self.size)
@@ -34,7 +34,7 @@ class Julia_Set:
 		img = PhotoImage(width=self.size, height=self.size)
 		self.canvas.create_image((0, 0), image=img)
 		# print(self.img.get(10, 10))
-		
+
 		# print("click")
 		# get where the screen was clicked
 		self.center = (event.x, event.y)
@@ -49,19 +49,19 @@ class Julia_Set:
 		# print(self.left)
 		self.top = self.center.imag + (self.scale / 2)
 		# print(self.top)
-		
+
 		self.maxModules = self.maxModules * 2
 		self.maxIterations = self.maxIterations * 2
 
 		# redraw
 		self.draw_set(img)
-	
+
 	def shift(self, event):
 		self.canvas.delete("all")
 		img = PhotoImage(width=self.size, height=self.size)
 		self.canvas.create_image((0, 0), image=img)
 		# print(self.img.get(10, 10))
-		
+
 		# convert to complex coordinates
 		self.set_plane()
 		# print(self.center)
@@ -71,7 +71,7 @@ class Julia_Set:
 		# print(self.left)
 		self.top = self.center.imag + (self.scale / 2)
 		# print(self.top)
-		
+
 		self.maxModules = self.maxModules * 2
 		self.maxIterations = self.maxIterations * 2
 
@@ -131,10 +131,10 @@ class Julia_Set:
 				# create a pixel at color: col at (pixelx, pixely)
 				# print("complex = " + str(complex))
 				# print("pixel = " + str(pixelx) + "," + str(pixely))
-				img.put(col, (pixelx, pixely))
-				
+				q = img.put(col, (pixelx, pixely))
+
 				if (pixelx == 10) and (pixely == 10):
-					print("At 10^2" + str(col))
+					print("At 10^2: " + str(col))
 
 				pixely = pixely + 1
 				complexy = complexy - self.deltay
@@ -162,12 +162,12 @@ class Julia_Set:
 		col = ""
 
 		if z == self.maxIterations:
-			col = "black"
+			col = "#000000000000"
 		elif z == 0:
-			col = "white"
+			col = "#ffffffffffff"
 		else:
 			# start with white, increment according to z
-			icol = [0xff, 0xff, 0xff]
+			icol = [0xffff, 0xffff, 0xffff]
 			col = "#"
 
 			delta = int(icol[0] / self.maxIterations)
@@ -184,7 +184,6 @@ class Julia_Set:
 
 			# col = hex(icol).upper()
 			# col = format(col, 'x')
-			# print("col = " + str(col))
 
 		return col
 
@@ -204,20 +203,25 @@ def third(complex) :
 	return (c * complex) + ((1-c) * complex)
 
 def fourth(complex) :
+	if complex == 0:
+		return max
 	c = 0.05 - 0.139j
 	return (complex * complex) + (c / complex)
 
 def fifth(complex) :
+	if complex == 0:
+		return max
 	c = 0.19 + 0.98j
-	return (complex * c) + ((1 - c) / (complex * complex))
+	return  (complex * c) + ((1 - c) / (complex * complex))	
 
 # need to map to plane
 def main():
-	mandelbrot_set = Julia_Set(mandelbrot)
+	# mandelbrot_set = Julia_Set(mandelbrot)
 	# first_set = Julia_Set(first)
 	# second_set = Julia_Set(second)
 	# third_set = Julia_Set(third)
 	# fourth_set = Julia_Set(fourth)
-	# fifth_set = Julia_Set(fifth)
+	fifth_set = Julia_Set(fifth)
 
+max = 2147483646
 main()
