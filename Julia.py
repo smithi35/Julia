@@ -5,7 +5,7 @@ class Julia_Set:
 	# constructor sets instance variables
 	def __init__(self, set):
 		self.set = set
-		self.size = 50
+		self.size = 500
 		self.maxModules = 2.0
 		self.maxIterations = 50
 
@@ -15,6 +15,7 @@ class Julia_Set:
 		self.canvas.pack()
 		self.canvas.bind("<Button-1>", self.click)
 		self.canvas.bind("<Shift_L>", self.shift)
+		self.canvas.bind("<Shift_R>", self.shift)
 
 		# initialize photoimage object
 		img = PhotoImage(width=self.size, height=self.size)
@@ -72,8 +73,8 @@ class Julia_Set:
 		self.top = self.center.imag + (self.scale / 2)
 		# print(self.top)
 
-		self.maxModules = self.maxModules * 2
-		self.maxIterations = self.maxIterations * 2
+		self.maxModules = self.maxModules / 2
+		self.maxIterations = self.maxIterations / 2
 
 		# redraw
 		self.draw_set(img)
@@ -133,8 +134,8 @@ class Julia_Set:
 				# print("pixel = " + str(pixelx) + "," + str(pixely))
 				q = img.put(col, (pixelx, pixely))
 
-				if (pixelx == 10) and (pixely == 10):
-					print("At 10^2: " + str(col))
+				# if (pixelx == 10) and (pixely == 10):
+					# print("At 10^2: " + str(col))
 
 				pixely = pixely + 1
 				complexy = complexy - self.deltay
@@ -142,8 +143,8 @@ class Julia_Set:
 			pixelx = pixelx + 1
 			complexx = complexx + self.deltax
 			# print("complexx = " + str(complexx) + ", complexy = " + str(complexy))
-		print("Drawn")
-		print(img.get(10,10))
+		# print("Drawn")
+		# print(img.get(10,10))
 
 	def iterate(self, complex):
 		count = 0
@@ -219,9 +220,10 @@ def main():
 	# mandelbrot_set = Julia_Set(mandelbrot)
 	# first_set = Julia_Set(first)
 	# second_set = Julia_Set(second)
-	# third_set = Julia_Set(third)
+	third_set = Julia_Set(third)
 	# fourth_set = Julia_Set(fourth)
-	fifth_set = Julia_Set(fifth)
+	# fifth_set = Julia_Set(fifth)
 
+# 2^31 -1 
 max = 2147483646
 main()
